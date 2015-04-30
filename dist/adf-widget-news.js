@@ -1,3 +1,4 @@
+(function(window, undefined) {'use strict';
 /*
  * The MIT License
  *
@@ -22,11 +23,11 @@
  * SOFTWARE.
  */
 
-'use strict';
+
 
 angular.module('adf.widget.news', ['adf.provider'])
   .value('newsServiceUrl', 'https://ajax.googleapis.com/ajax/services/feed/load?v=1.0&callback=JSON_CALLBACK&q=')
-  .config(function(dashboardProvider){
+  .config(["dashboardProvider", function(dashboardProvider){
     dashboardProvider
       .widget('news', {
         title: 'News',
@@ -34,18 +35,18 @@ angular.module('adf.widget.news', ['adf.provider'])
         templateUrl: '{widgetsPath}/news/src/view.html',
         controller: 'newsCtrl',
         resolve: {
-          feed: function(newsService, config){
+          feed: ["newsService", "config", function(newsService, config){
             if (config.url){
               return newsService.get(config.url);
             }
-          }
+          }]
         },
         edit: {
           templateUrl: '{widgetsPath}/news/src/edit.html'
         }
       });
-  })
-  .service('newsService', function($q, $http, newsServiceUrl){
+  }])
+  .service('newsService', ["$q", "$http", "newsServiceUrl", function($q, $http, newsServiceUrl){
     return {
       get: function(url){
         var deferred = $q.defer();
@@ -63,10 +64,10 @@ angular.module('adf.widget.news', ['adf.provider'])
         return deferred.promise;
       }
     };
-  })
-  .controller('newsCtrl', function($scope, feed){
+  }])
+  .controller('newsCtrl', ["$scope", "feed", function($scope, feed){
     $scope.feed = feed;
-  });
+  }]);
 
 angular.module("adf.widget.news").run(["$templateCache", function($templateCache) {$templateCache.put("{widgetsPath}/news/src/edit.html","<form role=form><div class=form-group><label for=url>Feed url</label> <input type=url class=form-control id=url ng-model=config.url placeholder=\"Enter feed url\"></div></form>");
-$templateCache.put("{widgetsPath}/news/src/view.html","<div class=news><div class=\"alert alert-info\" ng-if=!feed>Please insert a feed url in the widget configuration</div><h4><a ng-href={{feed.link}} target=_blank>{{feed.title}}</a></h4><ul><li ng-repeat=\"entry in feed.entries\"><a ng-href={{entry.link}} target=_blank>{{entry.title}}</a></li></ul></div>");}]);
+$templateCache.put("{widgetsPath}/news/src/view.html","<div class=news><div class=\"alert alert-info\" ng-if=!feed>Please insert a feed url in the widget configuration</div><h4><a ng-href={{feed.link}} target=_blank>{{feed.title}}</a></h4><ul><li ng-repeat=\"entry in feed.entries\"><a ng-href={{entry.link}} target=_blank>{{entry.title}}</a></li></ul></div>");}]);})(window);
