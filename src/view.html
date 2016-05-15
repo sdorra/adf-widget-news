@@ -1,17 +1,24 @@
 <div class="news">
-  <div class="alert alert-info" ng-if="!feed">
+  <div class="alert alert-info" ng-if="!vm.feed">
     Please insert a feed url in the widget configuration
   </div>
-  <h4>
-    <a ng-href="{{feed.link}}" target="_blank">
-      {{feed.title}}
-    </a>
-  </h4>
-  <ul>
-    <li ng-repeat="entry in feed.entries">
-      <a ng-href="{{entry.link}}" target="_blank">
-        {{entry.title}}
+  <div ng-if="vm.feed">
+    <h3 ng-if="config.showTitle">
+      <a ng-href="{{vm.feed.link}}" target="_blank">
+        {{vm.feed.title}}
       </a>
-    </li>
-  </ul>
+    </h3>
+    <p ng-if="config.showDescription">{{vm.feed.description}}</p>
+    <div class="media" ng-repeat="entry in vm.feed.entries">
+      <div class="media-body">
+        <h4 class="media-heading">
+          <a ng-href="{{entry.link}}" target="_blank">
+            {{entry.title}}
+          </a>
+        </h4>
+        <p>{{entry.contentSnippet}}</p>
+        <small>{{entry.author}}, {{entry.publishedDate | toDate | date: 'yyyy-MM-dd HH:mm'}}</small>
+      </div>
+    </div>
+  </div>
 </div>

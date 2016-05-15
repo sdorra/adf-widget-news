@@ -24,46 +24,34 @@
 
 'use strict';
 
+
 angular.module('adf.widget.news', ['adf.provider'])
   .value('newsServiceUrl', 'https://ajax.googleapis.com/ajax/services/feed/load?v=1.0&callback=JSON_CALLBACK&q=')
-  .config(function(dashboardProvider){
-    dashboardProvider
-      .widget('news', {
-        title: 'News',
-        description: 'Displays a RSS/Atom feed',
-        templateUrl: '{widgetsPath}/news/src/view.html',
-        controller: 'newsCtrl',
-        resolve: {
-          feed: function(newsService, config){
-            if (config.url){
-              return newsService.get(config.url);
-            }
+  .config(RegisterWidget);
+
+function RegisterWidget(dashboardProvider){
+  dashboardProvider
+    .widget('news', {
+      title: 'News',
+      description: 'Displays a RSS/Atom feed',
+      category: 'News',
+      templateUrl: '{widgetsPath}/news/src/view.html',
+      controller: 'NewsController',
+      controllerAs: 'vm',
+      config: {
+        num: 5,
+        showTitle: true,
+        showDescription: true
+      },
+      resolve: {
+        feed: function(NewsService, config){
+          if (config.url){
+            return NewsService.get(config);
           }
-        },
-        edit: {
-          templateUrl: '{widgetsPath}/news/src/edit.html'
         }
-      });
-  })
-  .service('newsService', function($q, $http, newsServiceUrl){
-    return {
-      get: function(url){
-        var deferred = $q.defer();
-        $http.jsonp(newsServiceUrl + encodeURIComponent(url))
-          .success(function(data){
-            if (data && data.responseData && data.responseData.feed){
-              deferred.resolve(data.responseData.feed);
-            } else {
-              deferred.reject();
-            }
-          })
-          .error(function(){
-            deferred.reject();
-          });
-        return deferred.promise;
+      },
+      edit: {
+        templateUrl: '{widgetsPath}/news/src/edit.html'
       }
-    };
-  })
-  .controller('newsCtrl', function($scope, feed){
-    $scope.feed = feed;
-  });
+    });
+}
