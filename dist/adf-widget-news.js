@@ -27,7 +27,7 @@
 
 
 angular.module('adf.widget.news', ['adf.provider'])
-  .value('newsServiceUrl', 'https://ajax.googleapis.com/ajax/services/feed/load?v=1.0&callback=JSON_CALLBACK&q=')
+  .constant('newsServiceUrl', '')
   .config(RegisterWidget);
 
 function RegisterWidget(dashboardProvider){
@@ -59,7 +59,7 @@ function RegisterWidget(dashboardProvider){
 RegisterWidget.$inject = ["dashboardProvider"];
 
 angular.module("adf.widget.news").run(["$templateCache", function($templateCache) {$templateCache.put("{widgetsPath}/news/src/edit.html","<form role=form><div class=form-group><label for=url>Feed url</label> <input type=url class=form-control id=url ng-model=config.url placeholder=\"Enter feed url\"></div><div class=form-group><label for=num>Number of Entries</label> <input type=number class=form-control id=num ng-model=config.num></div><div class=form-group><label for=showTitle>Show Feed Title</label> <input type=checkbox class=form-control id=showTitle ng-model=config.showTitle></div><div class=form-group><label for=showTitle>Show Feed Description</label> <input type=checkbox class=form-control id=showDescription ng-model=config.showDescription></div></form>");
-$templateCache.put("{widgetsPath}/news/src/view.html","<div class=news><div class=\"alert alert-info\" ng-if=!vm.feed>Please insert a feed url in the widget configuration</div><div ng-if=vm.feed><h3 ng-if=config.showTitle><a ng-href={{vm.feed.link}} target=_blank>{{vm.feed.title}}</a></h3><p ng-if=config.showDescription>{{vm.feed.description}}</p><div class=media ng-repeat=\"entry in vm.feed.entries\"><div class=media-body><h4 class=media-heading><a ng-href={{entry.link}} target=_blank>{{entry.title}}</a></h4><p>{{entry.contentSnippet}}</p><small>{{entry.author}}, {{entry.publishedDate | toDate | date: \'yyyy-MM-dd HH:mm\'}}</small></div></div></div></div>");}]);
+$templateCache.put("{widgetsPath}/news/src/view.html","<div class=news><div class=\"alert alert-info\" ng-if=!vm.feed>Please insert a feed url in the widget configuration</div><div ng-if=vm.feed><h3 ng-if=config.showTitle><a ng-href={{vm.feed.link}} target=_blank>{{vm.feed.title}}</a></h3><p ng-if=config.showDescription>{{vm.feed.description}}</p><div class=media ng-repeat=\"entry in vm.feed.entries\"><div class=media-body><h4 class=media-heading><a ng-href={{entry.link}} target=_blank>{{entry.title}}</a></h4><p>{{entry.contentSnippet}}</p><small>{{entry.author}}, {{entry.pubDate | toDate | date: \'yyyy-MM-dd HH:mm\'}}</small></div></div></div></div>");}]);
 /*
  * The MIT License
  *
@@ -102,10 +102,10 @@ function NewsService($q, $http, newsServiceUrl){
     var deferred = $q.defer();
     $http.jsonp(createUrl(config))
       .success(function(data){
-        if (data && data.responseData && data.responseData.feed){
-          deferred.resolve(data.responseData.feed);
+        if (data && data.feed){
+          deferred.resolve(data.feed);
         } else {
-          deferred.reject('feed does not contain responseData element');
+          deferred.reject('response does not contain feed element');
         }
       })
       .error(function(err){
