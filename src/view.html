@@ -17,7 +17,7 @@
           </a>
         </h4>
         <p>{{entry.contentSnippet}}</p>
-        <small>{{entry.author}}, {{entry.publishedDate | toDate | date: 'yyyy-MM-dd HH:mm'}}</small>
+        <small>{{ (entry.author) ? entry.author + ',' : '' }} {{entry.pubDate | toDate | date: 'yyyy-MM-dd HH:mm'}}</small>
       </div>
     </div>
   </div>

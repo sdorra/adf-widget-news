@@ -40,10 +40,10 @@ function NewsService($q, $http, newsServiceUrl){
     var deferred = $q.defer();
     $http.jsonp(createUrl(config))
       .success(function(data){
-        if (data && data.responseData && data.responseData.feed){
-          deferred.resolve(data.responseData.feed);
+        if (data && data.feed){
+          deferred.resolve(data.feed);
         } else {
-          deferred.reject('feed does not contain responseData element');
+          deferred.reject('response does not contain feed element');
         }
       })
       .error(function(err){

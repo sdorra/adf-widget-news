@@ -26,7 +26,7 @@
 
 
 angular.module('adf.widget.news', ['adf.provider'])
-  .value('newsServiceUrl', 'https://ajax.googleapis.com/ajax/services/feed/load?v=1.0&callback=JSON_CALLBACK&q=')
+  .constant('newsServiceUrl', '')
   .config(RegisterWidget);
 
 function RegisterWidget(dashboardProvider){
