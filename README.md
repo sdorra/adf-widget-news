@@ -55,3 +55,10 @@ Define a dependency for the module:
 ```javascript
 angular.module('sample', ['adf', 'adf.widget.news']);
 ```
+
+Define the URL of the service which converts a rss feed into json:
+
+ ```javascript
+ .constant('newsServiceUrl', '<URL>')
+ ```
+ The expected response structure is based on the node module [rss-parser](https://www.npmjs.com/package/rss-parser)
