@@ -127,7 +127,7 @@ gulp.task('serve', ['watch', 'sample'], function(){
       // return feed information - number of Entries configured by request
       feedparser.on('end', function () {
         if (feedError) {
-          resp.writeHead(400, error.toString());
+          resp.writeHead(400, feedError.toString());
           resp.end();
         } else {
           var numberOfEntries = queryParams.num;
@@ -135,17 +135,19 @@ gulp.task('serve', ['watch', 'sample'], function(){
 
           var feed = {feed: {entries: feedEntries, title: feedTitle, description: feedDescription, link: feedLink}};
 
-          var callbackName = queryParams.callback;
-          if (!callbackName) {
-            callbackName = 'jsonp_callback';
-          }
-
           resp.writeHead(200);
-          resp.write('/**/ typeof ' + callbackName + ' === "function" && ');
-          resp.write(callbackName + '(');
-          resp.write(JSON.stringify(feed));
-          resp.write(');');
 
+          var callbackName = queryParams.callback;
+          if (callbackName) {
+            resp.write('/**/ typeof ' + callbackName + ' === "function" && ');
+            resp.write(callbackName + '(');
+            resp.write(JSON.stringify(feed));
+            resp.write(');');
+          } else {
+            resp.write(JSON.stringify(feed));
+          }
+          
+          
           resp.end();
         }
       });
