@@ -16,7 +16,7 @@
             {{entry.title}}
           </a>
         </h4>
-        <p>{{entry.contentSnippet}}</p>
+	        <div ng-bind-html="entry.contentSnippet"></div>
         <small>{{ (entry.author) ? entry.author + ',' : '' }} {{entry.pubDate | toDate | date: 'yyyy-MM-dd HH:mm'}}</small>
       </div>
     </div>
