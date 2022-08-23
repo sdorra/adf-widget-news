@@ -7,9 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+* Only show date of an entry if an entry has a date (#1)
+### Added
+* Description on how to test this widget in a local cockpit.
 ## [v0.4.0] - 2021-06-22
 ### Fixed
-* fix version nr
+* Fix version nr
 
 ### Added
 * Changelog

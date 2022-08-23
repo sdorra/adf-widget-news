@@ -24,11 +24,40 @@
 
 'use strict';
 
-angular.module('adf.widget.news')
-  .filter('toDate', ToDate);
-
-function ToDate(){
-  return function(date){
+function ToDate() {
+  return function (date) {
+    if (date === '') {
+      return null;
+    }
     return new Date(date);
   };
 }
+
+/**
+ * this filter function handles descriptions of the form
+ * `{"en"=>"Software development platform", "de"=>"Software-Entwicklungsplattform"}` which offer different language
+ * encodings for an string.
+ * If par is in fact not a string but an object we check if the browser language is one of the keys of par and return
+ * the value of that key.
+ */
+function ParseLanguage() {
+  return function (param){
+    if(typeof param === 'object' && param !== null){
+      const lang = navigator.language || navigator.userLanguage;
+      if(param.hasOwnProperty(lang)){
+        return param[lang];
+      }
+      // language is not defined, as default case we return the original object
+      return param;
+    }
+    return param; // not an object
+  };
+}
+
+angular.module('adf.widget.news')
+  .filter('toDate', ToDate);
+
+angular.module('adf.widget.news')
+  .filter('parseLanguage', ParseLanguage);
+
+

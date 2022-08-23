@@ -8,7 +8,7 @@
         {{vm.feed.title}}
       </a>
     </h3>
-    <p ng-if="config.showDescription">{{vm.feed.description}}</p>
+    <p ng-if="config.showDescription">{{ vm.feed.description | parseLanguage}}</p>
     <div class="media" ng-repeat="entry in vm.feed.entries">
       <div class="media-body">
         <h4 class="media-heading">
@@ -16,8 +16,9 @@
             {{entry.title}}
           </a>
         </h4>
-	        <div ng-bind-html="entry.contentSnippet"></div>
-        <small>{{ (entry.author) ? entry.author + ',' : '' }} {{entry.pubDate | toDate | date: 'yyyy-MM-dd HH:mm'}}</small>
+          <div ng-bind-html="entry.contentSnippet"></div>
+        <small>{{ (entry.author) ? entry.author + ',' : '' }} {{(entry.pubDate) ? entry.pubDate :
+          '' | toDate | date: 'yyyy-MM-dd HH:mm'}}</small>
       </div>
     </div>
   </div>

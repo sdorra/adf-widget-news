@@ -1,89 +1,89 @@
-var gulp = require('gulp');
-var connect = require('gulp-connect');
-var wiredep = require('wiredep').stream;
-var $ = require('gulp-load-plugins')();
-var del = require('del');
-var jsReporter = require('jshint-stylish');
-var annotateAdfPlugin = require('ng-annotate-adf-plugin');
-var pkg = require('./package.json');
+let gulp = require('gulp');
+let connect = require('gulp-connect');
+let wiredep = require('wiredep').stream;
+let $ = require('gulp-load-plugins')();
+let del = require('del');
+let jsReporter = require('jshint-stylish');
+let annotateAdfPlugin = require('ng-annotate-adf-plugin');
+let pkg = require('./package.json');
 
-var url = require('url');
-var queryString = require('query-string');
-var request = require('request');
-var FeedParser = require('feedparser');
+let url = require('url');
+let queryString = require('query-string');
+let request = require('request');
+let FeedParser = require('feedparser');
 
-var annotateOptions = {
+let annotateOptions = {
   plugin: [
     annotateAdfPlugin
   ]
 };
 
-var templateOptions = {
+let templateOptions = {
   root: '{widgetsPath}/news/src',
   module: 'adf.widget.news'
 };
 
 /** lint **/
 
-gulp.task('csslint', function(){
+gulp.task('csslint', function () {
   gulp.src('src/**/*.css')
-      .pipe($.csslint())
-      .pipe($.csslint.reporter());
+    .pipe($.csslint())
+    .pipe($.csslint.reporter());
 });
 
-gulp.task('jslint', function(){
+gulp.task('jslint', function () {
   gulp.src('src/**/*.js')
-      .pipe($.jshint())
-      .pipe($.jshint.reporter(jsReporter));
+    .pipe($.jshint())
+    .pipe($.jshint.reporter(jsReporter));
 });
 
 gulp.task('lint', ['csslint', 'jslint']);
 
 /** serve **/
 
-gulp.task('templates', function(){
+gulp.task('templates', function () {
   return gulp.src('src/**/*.html')
-             .pipe($.angularTemplatecache('templates.tpl.js', templateOptions))
-             .pipe(gulp.dest('.tmp/dist'));
+    .pipe($.angularTemplatecache('templates.tpl.js', templateOptions))
+    .pipe(gulp.dest('.tmp/dist'));
 });
 
-gulp.task('sample', ['templates'], function(){
-  var files = gulp.src(['src/**/*.js', 'src/**/*.css', 'src/**/*.less', '.tmp/dist/*.js'])
-                  .pipe($.if('*.js', $.angularFilesort()));
+gulp.task('sample', ['templates'], function () {
+  let files = gulp.src(['src/**/*.js', 'src/**/*.css', 'src/**/*.less', '.tmp/dist/*.js'])
+    .pipe($.if('*.js', $.angularFilesort()));
 
   gulp.src('sample/index.html')
-      .pipe(wiredep({
-        directory: './components/',
-        bowerJson: require('./bower.json'),
-        devDependencies: true,
-        dependencies: true
-      }))
-      .pipe($.inject(files))
-      .pipe(gulp.dest('.tmp/dist'))
-      .pipe(connect.reload());
+    .pipe(wiredep({
+      directory: './components/',
+      bowerJson: require('./bower.json'),
+      devDependencies: true,
+      dependencies: true
+    }))
+    .pipe($.inject(files))
+    .pipe(gulp.dest('.tmp/dist'))
+    .pipe(connect.reload());
 });
 
-gulp.task('watch', function(){
+gulp.task('watch', function () {
   gulp.watch(['src/**'], ['sample']);
 });
 
-gulp.task('serve', ['watch', 'sample'], function(){
-  var feed = function(req, resp, next) {
-    var rawUrl = req.originalUrl;
+gulp.task('serve', ['watch', 'sample'], function () {
+  let feed = function (req, resp, next) {
+    let rawUrl = req.originalUrl;
     if (rawUrl.indexOf("/feed") === 0) {
-      var parsedUrl = url.parse(rawUrl);
-      var queryParams = queryString.parse(parsedUrl.query);
+      let parsedUrl = url.parse(rawUrl);
+      let queryParams = queryString.parse(parsedUrl.query);
 
-      var feedUrl = queryParams.url;
+      let feedUrl = queryParams.url;
 
-      var feedRequest = request(feedUrl);
+      let feedRequest = request(feedUrl);
 
-      var feedparser = new FeedParser();
-      var feedEntries = [];
-      var feedDescription = '';
-      var feedTitle = '';
-      var feedLink = '';
-      var feedError;
+      let feedparser = new FeedParser();
+      let feedEntries = [];
+      let feedDescription = '';
+      let feedTitle = '';
+      let feedLink = '';
+      let feedError;
 
 
       // error when server request failed
@@ -97,7 +97,7 @@ gulp.task('serve', ['watch', 'sample'], function(){
         if (resp.statusCode !== 200) {
           this.emit('error', new Error('Bad status code'));
         }
-        var stream = this; // `this` is `req`, which is a stream
+        let stream = this; // `this` is `req`, which is a stream
         stream.pipe(feedparser);
       });
 
@@ -108,18 +108,22 @@ gulp.task('serve', ['watch', 'sample'], function(){
 
       // read all feed information and save them
       feedparser.on('readable', function () {
-        var stream = this; // `this` is `feedparser`, which is a stream
-        var item;
+        let stream = this; // `this` is `feedparser`, which is a stream
+        let item;
         while (item = stream.read()) {
+          // if you want to test the parseLanguage filter function uncomment line below
+          // feedDescription = {'en': 'english string', 'de': 'deutscher string'};
           feedDescription = item.meta.description;
+
           feedTitle = item.meta.title;
           feedLink = item.meta.link;
+
           feedEntries.push({
             title: item.title,
             link: item.link,
             contentSnippet: item.summary,
             author: item.author,
-            pubDate: item.date
+            pubDate: item.pubDate,
           });
         }
       });
@@ -130,12 +134,12 @@ gulp.task('serve', ['watch', 'sample'], function(){
           resp.writeHead(400, error.toString());
           resp.end();
         } else {
-          var numberOfEntries = queryParams.num;
+          let numberOfEntries = queryParams.num;
           feedEntries = feedEntries.slice(0, numberOfEntries);
 
-          var feed = {feed: {entries: feedEntries, title: feedTitle, description: feedDescription, link: feedLink}};
+          let feed = {feed: {entries: feedEntries, title: feedTitle, description: feedDescription, link: feedLink}};
 
-          var callbackName = queryParams.callback;
+          let callbackName = queryParams.callback;
           if (!callbackName) {
             callbackName = 'jsonp_callback';
           }
@@ -159,7 +163,7 @@ gulp.task('serve', ['watch', 'sample'], function(){
     root: ['.tmp/dist', '.'],
     livereload: true,
     port: 9002,
-    middleware: function(connect, opt) {
+    middleware: function (connect, opt) {
       return [feed];
     }
   });
@@ -167,34 +171,34 @@ gulp.task('serve', ['watch', 'sample'], function(){
 
 /** build **/
 
-gulp.task('css', function(){
+gulp.task('css', function () {
   gulp.src(['src/**/*.css', 'src/**/*.less'])
-      .pipe($.if('*.less', $.less()))
-      .pipe($.concat(pkg.name + '.css'))
-      .pipe(gulp.dest('dist'))
-      .pipe($.rename(pkg.name + '.min.css'))
-      .pipe($.minifyCss())
-      .pipe(gulp.dest('dist'));
+    .pipe($.if('*.less', $.less()))
+    .pipe($.concat(pkg.name + '.css'))
+    .pipe(gulp.dest('dist'))
+    .pipe($.rename(pkg.name + '.min.css'))
+    .pipe($.minifyCss())
+    .pipe(gulp.dest('dist'));
 });
 
-gulp.task('js', function() {
+gulp.task('js', function () {
   gulp.src(['src/**/*.js', 'src/**/*.html'])
-      .pipe($.if('*.html', $.minifyHtml()))
-      .pipe($.if('*.html', $.angularTemplatecache(pkg.name + '.tpl.js', templateOptions)))
-      .pipe($.angularFilesort())
-      .pipe($.if('*.js', $.replace(/'use strict';/g, '')))
-      .pipe($.concat(pkg.name + '.js'))
-      .pipe($.headerfooter('(function(window, undefined) {\'use strict\';\n', '})(window);'))
-      .pipe($.ngAnnotate(annotateOptions))
-      .pipe(gulp.dest('dist'))
-      .pipe($.rename(pkg.name + '.min.js'))
-      .pipe($.uglify())
-      .pipe(gulp.dest('dist'));
+    .pipe($.if('*.html', $.minifyHtml()))
+    .pipe($.if('*.html', $.angularTemplatecache(pkg.name + '.tpl.js', templateOptions)))
+    .pipe($.angularFilesort())
+    .pipe($.if('*.js', $.replace(/'use strict';/g, '')))
+    .pipe($.concat(pkg.name + '.js'))
+    .pipe($.headerfooter('(function(window, undefined) {\'use strict\';\n', '})(window);'))
+    .pipe($.ngAnnotate(annotateOptions))
+    .pipe(gulp.dest('dist'))
+    .pipe($.rename(pkg.name + '.min.js'))
+    .pipe($.uglify())
+    .pipe(gulp.dest('dist'));
 });
 
 /** clean **/
 
-gulp.task('clean', function(cb){
+gulp.task('clean', function (cb) {
   del(['dist', '.tmp'], cb);
 });
 

@@ -59,7 +59,7 @@ function RegisterWidget(dashboardProvider){
 RegisterWidget.$inject = ["dashboardProvider"];
 
 angular.module("adf.widget.news").run(["$templateCache", function($templateCache) {$templateCache.put("{widgetsPath}/news/src/edit.html","<form role=form><div class=form-group><label for=url>Feed url</label> <input type=url class=form-control id=url ng-model=config.url placeholder=\"Enter feed url\"></div><div class=form-group><label for=num>Number of Entries</label> <input type=number class=form-control id=num ng-model=config.num></div><div class=form-group><label for=showTitle>Show Feed Title</label> <input type=checkbox class=form-control id=showTitle ng-model=config.showTitle></div><div class=form-group><label for=showTitle>Show Feed Description</label> <input type=checkbox class=form-control id=showDescription ng-model=config.showDescription></div></form>");
-$templateCache.put("{widgetsPath}/news/src/view.html","<div class=news><div class=\"alert alert-info\" ng-if=!vm.feed>Please insert a feed url in the widget configuration</div><div ng-if=vm.feed><h3 ng-if=config.showTitle><a ng-href={{vm.feed.link}} target=_blank>{{vm.feed.title}}</a></h3><p ng-if=config.showDescription>{{vm.feed.description}}</p><div class=media ng-repeat=\"entry in vm.feed.entries\"><div class=media-body><h4 class=media-heading><a ng-href={{entry.link}} target=_blank>{{entry.title}}</a></h4><div ng-bind-html=entry.contentSnippet></div><small>{{ (entry.author) ? entry.author + \',\' : \'\' }} {{entry.pubDate | toDate | date: \'yyyy-MM-dd HH:mm\'}}</small></div></div></div></div>");}]);
+$templateCache.put("{widgetsPath}/news/src/view.html","<div class=news><div class=\"alert alert-info\" ng-if=!vm.feed>Please insert a feed url in the widget configuration</div><div ng-if=vm.feed><h3 ng-if=config.showTitle><a ng-href={{vm.feed.link}} target=_blank>{{vm.feed.title}}</a></h3><p ng-if=config.showDescription>{{ vm.feed.description | parseLanguage}}</p><div class=media ng-repeat=\"entry in vm.feed.entries\"><div class=media-body><h4 class=media-heading><a ng-href={{entry.link}} target=_blank>{{entry.title}}</a></h4><div ng-bind-html=entry.contentSnippet></div><small>{{ (entry.author) ? entry.author + \',\' : \'\' }} {{(entry.pubDate) ? entry.pubDate : \'\' | toDate | date: \'yyyy-MM-dd HH:mm\'}}</small></div></div></div></div>");}]);
 /*
  * The MIT License
  *
@@ -146,14 +146,43 @@ NewsService.$inject = ["$q", "$http", "newsServiceUrl"];
 
 
 
-angular.module('adf.widget.news')
-  .filter('toDate', ToDate);
-
-function ToDate(){
-  return function(date){
+function ToDate() {
+  return function (date) {
+    if (date === '') {
+      return null;
+    }
     return new Date(date);
   };
 }
+
+/**
+ * this filter function handles descriptions of the form
+ * `{"en"=>"Software development platform", "de"=>"Software-Entwicklungsplattform"}` which offer different language
+ * encodings for an string.
+ * If par is in fact not a string but an object we check if the browser language is one of the keys of par and return
+ * the value of that key.
+ */
+function ParseLanguage() {
+  return function (param){
+    if(typeof param === 'object' && param !== null){
+      const lang = navigator.language || navigator.userLanguage;
+      if(param.hasOwnProperty(lang)){
+        return param[lang];
+      }
+      // language is not defined, as default case we return the original object
+      return param;
+    }
+    return param; // not an object
+  };
+}
+
+angular.module('adf.widget.news')
+  .filter('toDate', ToDate);
+
+angular.module('adf.widget.news')
+  .filter('parseLanguage', ParseLanguage);
+
+
 
 /*
  * The MIT License

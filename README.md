@@ -5,6 +5,7 @@ News widget for the [angular-dashboard-framework](https://github.com/sdorra/angu
 ## Build
 
 The widget is build with the help of [node](https://nodejs.org/), [npm](https://www.npmjs.com/), [bower](http://bower.io/) and [gulp](http://gulpjs.com/). For a install instruction for node and npm, please have a look [here](https://docs.npmjs.com/getting-started/installing-node).
+Locally the widget can be built and tested with **node version 9**.
 
 #### Installing bower and gulp
 
@@ -36,6 +37,13 @@ Each goal can be used as parameter for the gulp command.
 * *lint*: checks css and javascript files for common errors
 * *serve*: starts an webserver to test the widget
 
+## Test in Cockpit
+* Build adf-news-widget.
+  ```bash
+  gulp
+  ```
+* Replace contents of folder `app/client/bower_components/adf-widget-news/dist` in cockpit with the contents of the `dist folder.
+
 ## Usage
 
 Install the widget with bower:
@@ -45,7 +53,6 @@ bower install adf-widget-news --save
 ```
 
 Include the script in your index.html and be sure it is loaded after [angular](https://angularjs.org/) and after the [angular-dashboard-framework](https://github.com/sdorra/angular-dashboard-framework).
-
 ```html
 <script type="text/javascript" src="bower_components/adf-widget-news/dist/adf-widget-news.min.js"></script>
 ```
