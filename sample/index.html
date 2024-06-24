@@ -51,7 +51,7 @@
     <script type="text/javascript">
       angular
        .module('adfWidgetSample', ['adf', 'adf.widget.news', 'LocalStorageModule'])
-       .constant('newsServiceUrl', '/feed?callback=JSON_CALLBACK&url=')
+       .constant('newsServiceUrl', '/feed?url=')
        .config(function(dashboardProvider, localStorageServiceProvider){
          localStorageServiceProvider.setPrefix('adf.news');
          dashboardProvider.structure('4-8', {

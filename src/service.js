@@ -28,7 +28,6 @@ angular.module('adf.widget.news')
   .service('NewsService', NewsService);
 
 function NewsService($q, $http, newsServiceUrl){
-
   function createUrl(config){
     if (!config.num){
       config.num = 5;
@@ -38,7 +37,7 @@ function NewsService($q, $http, newsServiceUrl){
 
   function loadFeed(config){
     var deferred = $q.defer();
-    $http.jsonp(createUrl(config))
+    $http.get(createUrl(config))
       .success(function(data){
         if (data && data.feed){
           deferred.resolve(data.feed);
@@ -46,9 +45,9 @@ function NewsService($q, $http, newsServiceUrl){
           deferred.reject('response does not contain feed element');
         }
       })
-      .error(function(err){
-        deferred.reject(err);
-      });
+      .catch(function(response) {
+       deferred.reject('Service returned ' + response.status + ' --> ' + response.statusText);
+    });
     return deferred.promise;
   }
 
